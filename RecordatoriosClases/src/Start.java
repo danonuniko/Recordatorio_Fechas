@@ -14,6 +14,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+//Clases para enviar email.
+import java.util.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+import javax.activation.*;
+import javax.mail.Session;
+import javax.mail.Transport;
+ 
+
 public class Start {
 
 	private JFrame frmRecordatorioFechas;
@@ -168,12 +177,12 @@ public class Start {
 				textoMinutos = minutos.getText();
 				textoCorreo = correoElectronico.getText();
 				textoHorasPreaviso = horasAviso.getText();
+				
 				if(textoAsignatura.equals("") || textoDia.equals("") || textoMes.equals("") || textoAnyo.equals("")
 						|| textoHora.equals("") || textoMinutos.equals("") || textoCorreo.equals("")
 						|| textoHorasPreaviso.equals("")) {
 					etiquetaResultado.setText("ERROR. RELLENE TODOS LOS CAMPOS.");
 				} 
-			
 				else {
 					
 					try {
@@ -196,10 +205,57 @@ public class Start {
 						else
 							etiquetaResultado.setText("El producto no se ha podido crear");
 						
+						// email ID of Recipient.
+						String recipient = "dcolladovizcarro@gmail.com";
+
+					   // email ID of  Sender.
+					   String sender = "dcolladovizcarro@gmail.com";
+			
+					   // using host as localhost
+					   String host = "127.0.0.1";
+			
+					   // Getting system properties
+					   Properties properties = System.getProperties();
+			
+					   // Setting up mail server
+					   properties.setProperty("mail.smtp.host", host);
+			
+					   // creating session object to get properties
+					   Session session = Session.getDefaultInstance(properties);
+			
+					   try
+					   {
+					      // MimeMessage object.
+					      MimeMessage message = new MimeMessage(session);
+			
+					      // Set From Field: adding senders email to from field.
+					      message.setFrom(new InternetAddress(sender));
+			
+					      // Set To Field: adding recipient's email to from field.
+					      message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+			
+					      // Set Subject: subject of the email
+					      message.setSubject("This is Subject");
+			
+					      // set body of the email.
+					      message.setText("This is a test mail");
+			
+					      // Send email.
+					      Transport.send(message);
+					      System.out.println("Mail successfully sent");
+					   }
+					   catch (MessagingException mex)
+					   {
+					      mex.printStackTrace();
+					      System.out.println("El email no se pudo enviar");
+					   }
+						
 					} catch (Exception ex) {
 						ex.printStackTrace();
 						etiquetaResultado.setText("El producto no se ha podido crear. Revise los datos introducidos");
 					}
+					
+					
 
 				}
 			}
