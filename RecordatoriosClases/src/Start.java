@@ -21,7 +21,6 @@ import javax.mail.internet.*;
 import javax.activation.*;
 import javax.mail.Session;
 import javax.mail.Transport;
- 
 
 public class Start {
 
@@ -177,24 +176,22 @@ public class Start {
 				textoMinutos = minutos.getText();
 				textoCorreo = correoElectronico.getText();
 				textoHorasPreaviso = horasAviso.getText();
-				
-				if(textoAsignatura.equals("") || textoDia.equals("") || textoMes.equals("") || textoAnyo.equals("")
+
+				if (textoAsignatura.equals("") || textoDia.equals("") || textoMes.equals("") || textoAnyo.equals("")
 						|| textoHora.equals("") || textoMinutos.equals("") || textoCorreo.equals("")
 						|| textoHorasPreaviso.equals("")) {
 					etiquetaResultado.setText("ERROR. RELLENE TODOS LOS CAMPOS.");
-				} 
-				else {
-					
+				} else {
+
 					try {
 
 						conexion = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/calendario", "root",
 								"");
 						s = (Statement) conexion.createStatement();
-						
-						String propuesta = "INSERT INTO fechas (asignatura, fecha) VALUES ('"
-								+ textoAsignatura + "', '" + textoAnyo + "-"
-								+ textoMes + "-" + textoDia + " "
-								+ textoHora + ":" + textoMinutos + "')";
+
+						String propuesta = "INSERT INTO fechas (asignatura, fecha) VALUES ('" + textoAsignatura + "', '"
+								+ textoAnyo + "-" + textoMes + "-" + textoDia + " " + textoHora + ":" + textoMinutos
+								+ "')";
 						System.out.println(propuesta);
 						int numeroCambios = s.executeUpdate(propuesta);
 						s.close();
@@ -204,58 +201,45 @@ public class Start {
 							etiquetaResultado.setText("Producto creado correctamente");
 						else
 							etiquetaResultado.setText("El producto no se ha podido crear");
-						
-						// email ID of Recipient.
-						String recipient = "dcolladovizcarro@gmail.com";
 
-					   // email ID of  Sender.
-					   String sender = "dcolladovizcarro@gmail.com";
-			
-					   // using host as localhost
-					   String host = "127.0.0.1";
-			
-					   // Getting system properties
-					   Properties properties = System.getProperties();
-			
-					   // Setting up mail server
-					   properties.setProperty("mail.smtp.host", host);
-			
-					   // creating session object to get properties
-					   Session session = Session.getDefaultInstance(properties);
-			
-					   try
-					   {
-					      // MimeMessage object.
-					      MimeMessage message = new MimeMessage(session);
-			
-					      // Set From Field: adding senders email to from field.
-					      message.setFrom(new InternetAddress(sender));
-			
-					      // Set To Field: adding recipient's email to from field.
-					      message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
-			
-					      // Set Subject: subject of the email
-					      message.setSubject("This is Subject");
-			
-					      // set body of the email.
-					      message.setText("This is a test mail");
-			
-					      // Send email.
-					      Transport.send(message);
-					      System.out.println("Mail successfully sent");
-					   }
-					   catch (MessagingException mex)
-					   {
-					      mex.printStackTrace();
-					      System.out.println("El email no se pudo enviar");
-					   }
-						
+						try {
+							// La dirección de correo de envío
+							String remitente = "dcolladovizcarro@gmail.com";
+							// La clave de aplicación obtenida según se explica en este artículo:
+							String claveemail = "wfqaqbuhvdgjfjmb";
+
+							Properties props = System.getProperties();
+							props.put("mail.smtp.host", "smtp.gmail.com"); // El servidor SMTP de Google
+							props.put("mail.smtp.user", remitente);
+							props.put("mail.smtp.clave", claveemail); // La clave de la cuenta
+							props.put("mail.smtp.auth", "true"); // Usar autenticación mediante usuario y clave
+							props.put("mail.smtp.starttls.enable", "true"); // Para conectar de manera segura al
+																			// servidor SMTP
+							props.put("mail.smtp.port", "587"); // El puerto SMTP seguro de Google
+
+							Session session = Session.getDefaultInstance(props);
+							MimeMessage message = new MimeMessage(session);
+
+							message.setFrom(new InternetAddress(remitente));
+							message.addRecipient(Message.RecipientType.TO,
+									new InternetAddress("marco070593@gmail.com")); // Se podrían añadir varios de la
+																					// misma manera
+							message.setSubject("hola");
+							message.setText("mensaje enviado desde programa JAVA");
+							Transport transport = session.getTransport("smtp");
+							transport.connect("smtp.gmail.com", remitente, claveemail);
+							transport.sendMessage(message, message.getAllRecipients());
+							transport.close();
+
+						} catch (MessagingException mex) {
+							mex.printStackTrace();
+							System.out.println("El email no se pudo enviar");
+						}
+
 					} catch (Exception ex) {
 						ex.printStackTrace();
 						etiquetaResultado.setText("El producto no se ha podido crear. Revise los datos introducidos");
 					}
-					
-					
 
 				}
 			}
@@ -286,7 +270,7 @@ public class Start {
 		etiquetaResultado.setHorizontalAlignment(SwingConstants.CENTER);
 		etiquetaResultado.setBounds(29, 175, 459, 63);
 		frmRecordatorioFechas.getContentPane().add(etiquetaResultado);
-		
+
 		botonReiniciar = new JButton("REINICIAR");
 		botonReiniciar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
